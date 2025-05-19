@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the project name
-NAME="project2"
+NAME="ghcr.io/uclacs118/project2"
 
 # Function to display help
 function show_help() {
