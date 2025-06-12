@@ -1,3 +1,6 @@
+/*
+ * libsecurity.c - Cryptographic primitives and key management using OpenSSL
+ */
 #include <arpa/inet.h>
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
@@ -8,8 +11,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define SECRET_SIZE 32
-#define MAC_SIZE 32
+#define SECRET_SIZE 32 //Size of the ECDH shared secret in bytes
+#define MAC_SIZE 32 //  
 #define IV_SIZE 16
 
 EVP_PKEY* ec_priv_key = NULL;
@@ -23,8 +26,16 @@ uint8_t* secret = NULL;
 uint8_t* enc_key = NULL;
 uint8_t* mac_key = NULL;
 
+
+
+
+/*
+load_private_key:
+    Read an EC private key from a DER-encoded file.
+    Exit on failure
+*/
 void load_private_key(const char* filename) {
-    FILE* fp = fopen(filename, "r");
+    FILE* fp = fopen(filename, "r"); //Open key file
     if (fp == NULL) {
         fprintf(stderr, "Error: invalid private key filename\n");
         exit(255);
@@ -37,6 +48,8 @@ void load_private_key(const char* filename) {
     fclose(fp);
 }
 
+
+//Getter/setter for the loaded private key
 EVP_PKEY* get_private_key() {
     return ec_priv_key;
 }
@@ -45,12 +58,24 @@ void set_private_key(EVP_PKEY* key) {
     ec_priv_key = key;
 }
 
+
+
+/**
+ * load_public_key:
+ * Deserialize a DER-encoded public key from memory
+*/
 void load_peer_public_key(const uint8_t* peer_key, size_t size) {
     BIO* bio = BIO_new_mem_buf(peer_key, size);
     ec_peer_public_key = d2i_PUBKEY_bio(bio, NULL);
     BIO_free(bio);
 }
 
+
+/**
+ * load_ca_public_key:
+ *   Read CA's public key from a DER-encoded file to verify certs.
+ *   Exits on failure.
+ */
 void load_ca_public_key(const char* filename) {
     FILE* fp = fopen(filename, "r");
     if (fp == NULL) {
@@ -66,6 +91,11 @@ void load_ca_public_key(const char* filename) {
     fclose(fp);
 }
 
+
+/**
+ * load_certificate:
+ *   Read a raw TLV-encoded certificate file into memory.
+ */
 void load_certificate(const char* filename) {
     FILE* fp = fopen(filename, "r");
     if (fp == NULL) {
@@ -80,6 +110,10 @@ void load_certificate(const char* filename) {
     fclose(fp);
 }
 
+/**
+ * generate_private_key:
+ *   Create a new ephemeral EC key on curve P-256.
+ */
 void generate_private_key() {
     EVP_PKEY_CTX* pctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
 
@@ -90,10 +124,20 @@ void generate_private_key() {
     EVP_PKEY_CTX_free(pctx);
 }
 
+
+/**
+ * derive_public_key:
+ *   Extract the public portion of ec_priv_key into DER format.
+ */
 void derive_public_key() {
     pub_key_size = i2d_PUBKEY(ec_priv_key, &public_key);
 }
 
+
+/**
+ * derive_secret:
+ *   Perform ECDH between ec_priv_key and ec_peer_public_key.
+ */
 void derive_secret() {
     size_t sec_size = SECRET_SIZE;
     EVP_PKEY_CTX* ctx = EVP_PKEY_CTX_new(ec_priv_key, NULL);
@@ -106,6 +150,12 @@ void derive_secret() {
     EVP_PKEY_CTX_free(ctx);
 }
 
+
+/**
+ * derive_keys:
+ *   Run HKDF-SHA256 on the shared secret using provided salt.
+ *   Produces two keys: enc_key (info="enc") and mac_key (info="mac").
+ */
 void derive_keys(const uint8_t* salt, size_t size) {
     EVP_KDF* kdf;
     EVP_KDF_CTX* kctx;
@@ -136,6 +186,12 @@ void derive_keys(const uint8_t* salt, size_t size) {
     EVP_KDF_CTX_free(kctx);
 }
 
+
+/**
+ * sign:
+ *   Produce an ECDSA-SHA256 signature of 'data', writing into 'signature'.
+ *   Returns the signature length.
+ */
 size_t sign(uint8_t* signature, const uint8_t* data, size_t size) {
     size_t sig_size = 255;
     EVP_MD_CTX* mdctx = EVP_MD_CTX_new();
@@ -148,6 +204,12 @@ size_t sign(uint8_t* signature, const uint8_t* data, size_t size) {
     return sig_size;
 }
 
+
+/**
+ * verify:
+ *   Verify ECDSA-SHA256 signature using given authority key.
+ *   Returns 1 if valid, 0 otherwise.
+ */
 int verify(const uint8_t* signature, size_t sig_size, const uint8_t* data,
            size_t size, EVP_PKEY* authority) {
     int result;
@@ -161,8 +223,19 @@ int verify(const uint8_t* signature, size_t sig_size, const uint8_t* data,
     return result;
 }
 
+
+/**
+ * generate_nonce:
+ *   Fill buf with cryptographically secure random bytes.
+ */
 void generate_nonce(uint8_t* buf, size_t size) { RAND_bytes(buf, size); }
 
+
+/**
+ * encrypt_data:
+ *   Encrypt 'data' under AES-256-CBC with PKCS#7 padding.
+ *   Outputs IV and ciphertext. Returns ciphertext length.
+ */
 size_t encrypt_data(uint8_t* iv, uint8_t* cipher, const uint8_t* data, size_t size) {
     int cipher_size;
     int padding_size;
@@ -178,6 +251,12 @@ size_t encrypt_data(uint8_t* iv, uint8_t* cipher, const uint8_t* data, size_t si
     return cipher_size + padding_size;
 }
 
+
+/**
+ * decrypt_cipher:
+ *   Decrypt AES-256-CBC ciphertext using stored enc_key and provided IV.
+ *   Returns plaintext length after removing padding.
+ */
 size_t decrypt_cipher(uint8_t* data, const uint8_t* cipher, size_t size, const uint8_t* iv) {
     int data_size;
     int padding_size;
@@ -192,6 +271,11 @@ size_t decrypt_cipher(uint8_t* data, const uint8_t* cipher, size_t size, const u
     return data_size + padding_size;
 }
 
+
+/**
+ * hmac:
+ *   Compute HMAC-SHA256 over data with mac_key. Output is MAC_SIZE bytes.
+ */
 void hmac(uint8_t* digest, const uint8_t* data, size_t size) {
     unsigned int mac_size = MAC_SIZE;
     HMAC(EVP_sha256(), mac_key, SECRET_SIZE, data, size, digest, &mac_size);

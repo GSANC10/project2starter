@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "*.css": "tailwindcss",
+    "netdb.h": "c",
+    "__locale": "c",
+    "ios": "c"
+  }
+}

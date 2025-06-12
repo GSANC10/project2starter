@@ -8,6 +8,10 @@
 #include <errno.h>
 #include <sys/fcntl.h>
 
+
+
+//The program expects at least one argument: the TCP port on which to listen
+//If you don't supply a port, it prints a usage message and exits wtiih zero
 int main(int argc, char** argv) {
     if (argc < 2) {
         fprintf(stderr, "Usage: server <port>\n");
