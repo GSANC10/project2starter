@@ -65,13 +65,6 @@ int main(int argc, char** argv) {
     fclose(fp);
 
     //Ultimately here instead of hand-crafting or copying certificate files, you regenerate the exact TLV format your protocol expects
-
-
-
-
-
-
-
     /* print_tlv_bytes(b, len); */
     /* tlv* cert2 = deserialize_tlv(b, len); */
     /* uint16_t len2 = serialize_tlv(b, cert2); */

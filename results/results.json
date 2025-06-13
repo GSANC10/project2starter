@@ -1,0 +1,55 @@
+{
+    "tests": [
+        {
+            "name": "Compilation",
+            "score": 0,
+            "max_score": 0,
+            "status": "passed",
+            "number": "0"
+        },
+        {
+            "name": "Handshake: Client Hello",
+            "score": 10,
+            "max_score": 10,
+            "status": "passed",
+            "number": "1.1"
+        },
+        {
+            "name": "Handshake: Server Hello",
+            "score": 15,
+            "max_score": 25,
+            "status": "failed",
+            "output": "Your Server Hello is in an unrecognized form.\n",
+            "number": "1.2"
+        },
+        {
+            "name": "Handshake: Finished",
+            "score": 5,
+            "max_score": 25,
+            "status": "failed",
+            "output": "Your Finished message is in an unrecognized form.\n",
+            "number": "1.3"
+        },
+        {
+            "name": "Encrypt and MAC: Client",
+            "score": 0,
+            "max_score": 15,
+            "status": "failed",
+            "output": "Your client didn't encrypt data back to our server correctly.\nWe inputted 500 bytes into your client and we received 37 bytes with a percent difference of 100.0%\nYour client didn't decrypt data from our server correctly.\nWe sent 500 bytes and your client received 0 bytes with a percent difference of 100.0%\n",
+            "number": "1.4"
+        },
+        {
+            "name": "Encrypt and MAC: Server",
+            "score": 0,
+            "max_score": 15,
+            "status": "failed",
+            "output": "Your server didn't decrypt data back from our client correctly.\nWe sent 500 bytes your server received 0 bytes with a percent difference of 100.0%\nYour server didn't encrypt data back to our client correctly.\nWe inputted 500 bytes into your server and we received 19 bytes with a percent difference of 100.0%\n",
+            "number": "1.5"
+        }
+    ],
+    "leaderboard": [],
+    "visibility": "visible",
+    "execution_time": "8.39",
+    "score": 30,
+    "test_output_format": "md"
+}

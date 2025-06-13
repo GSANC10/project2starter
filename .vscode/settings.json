@@ -3,6 +3,7 @@
     "*.css": "tailwindcss",
     "netdb.h": "c",
     "__locale": "c",
-    "ios": "c"
+    "ios": "c",
+    "libsecurity.h": "c"
   }
 }

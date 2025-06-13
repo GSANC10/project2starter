@@ -1,0 +1,11 @@
+=== CLIENT HELLO OUTGOING ===
+Type: 0x10
+Length: 127
+Type: 0x01
+Length: 32
+a9 72 f8 d4 a9 62 c1 58 e1 b6 88 db e8 0d cf f4 88 27 2f 1b cb da bf ad 2d c5 51 c3 ba a0 4c b3 
+Type: 0x02
+Length: 91
+30 59 30 13 06 07 2a 86 48 ce 3d 02 01 06 08 2a 86 48 ce 3d 03 01 07 03 42 00 04 3e 6a ce df f4 4f 05 3c 0a 51 ad 21 f9 6f da 07 cd 53 f1 66 d2 6d 7b 32 ea 1d 9d 4a 58 d4 0a cf a1 cd f9 1a 88 c4 06 25 04 dd 6b db 71 f3 10 70 96 6b 10 7e 84 3d 0a 72 f3 ef 7c 0f 2d 69 66 f0 
+Caching into ts[0..129):
+10 7f 01 20 a9 72 f8 d4 a9 62 c1 58 e1 b6 88 db e8 0d cf f4 88 27 2f 1b cb da bf ad 2d c5 51 c3 ba a0 4c b3 02 5b 30 59 30 13 06 07 2a 86 48 ce 3d 02 01 06 08 2a 86 48 ce 3d 03 01 07 03 42 00 04 3e 6a ce df f4 4f 05 3c 0a 51 ad 21 f9 6f da 07 cd 53 f1 66 d2 6d 7b 32 ea 1d 9d 4a 58 d4 0a cf a1 cd f9 1a 88 c4 06 25 04 dd 6b db 71 f3 10 70 96 6b 10 7e 84 3d 0a 72 f3 ef 7c 0f 2d 69 66 f0 
